@@ -1,12 +1,16 @@
 from flask import *
-#from pgdb import *
+from pgdb import *
 
 app = Flask(__name__)
 
 
-@app.route('/')
-def home():
-	return render_template('indexHC.html')
+@app.route('/',methods=['GET','POST'])
+def home(seriesAll=[],seriesBelowProf=[]):
+	seriesAll = assessments_by_grade('') # method from pgdb module
+	seriesBelowProf = assessments_by_grade('Below Proficient') # method from pgdb module
+	print seriesAll
+	print seriesBelowProf
+	return render_template('indexHC.html',seriesAll=seriesAll,grades=grades,seriesBelowProf=seriesBelowProf,bpGrades=bpGrades)
 
 @app.route('/teacher')
 def teacher():

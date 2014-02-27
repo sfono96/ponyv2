@@ -118,7 +118,7 @@ var teacherGrowth = [{
 ////////////////////////////////////////////
 ////////////////// X AXIS //////////////////
 ////////////////////////////////////////////
-
+var grades2 = ['1','2','3','4','5','6']
 var grades = ['K','1','2','3','4','5','6']
 var weeks = ['1/3','1/10','1/17','1/24','1/31','2/7']
 var teachers = ['Teacher A','Teacher B','Teacher C','Teacher D']
@@ -138,40 +138,20 @@ var optionsTeacherGrade, optionsTeacherGrowth;
 
 // Proficient By Grade Options
 var optionsProfByGrade = {
-    chart: {
-        type: 'column',
-        renderTo: 'containerHC1'
-    },
-    title: {
-        text: ''
-    },
+    chart: {type: 'column',renderTo: 'containerHC1'},
+    title: {text: ''},
     xAxis: {
-        categories: grades
+        categories: []
     },
-    yAxis: {
-        min: 0,
-        gridLineWidth: 0,
-
-        title: {
-            text: 'Students By Grade By Score'
+    yAxis: {min: 0,gridLineWidth: 0,
+        title: {text: 'Student Scores'},
+        stackLabels: {enabled: true,
+            style: {fontWeight: 'bold',color: 'gray'},
+            //formatter:function(){return this.total;}
         },
-        stackLabels: {
-            enabled: true,
-            style: {
-                fontWeight: 'bold',
-                color: 'gray'
-            },
-            formatter:function(){return this.total;}
-        },
-        labels: false
+        labels: true
     },
-
-    tooltip: {
-        enabled: false,
-        formatter: function() {
-            return '<b>'+ this.series.name +': '+ this.y +'<br/>';
-        }
-    },
+    tooltip: {pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',shared: true},
     plotOptions: {
         column: {
             stacking: 'percent',
@@ -191,7 +171,7 @@ var optionsProfByGrade = {
             }
         }
     },
-    series: dashboardProficientByGrade
+    series: []
 };
 
 // Proficient By Week Options
@@ -215,7 +195,7 @@ var optionsProfByWeek = {
             text: 'Students By Week By Score'
         },
         stackLabels: {
-            enabled: true,
+            enabled: false,
             style: {
                 fontWeight: 'bold',
                 color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
@@ -224,16 +204,18 @@ var optionsProfByWeek = {
         labels: false
     },
     tooltip: {
-        enabled: false,
-        formatter: function() {
-            return '<b>'+ this.series.name +': '+ this.y +'<br/>';
-        }
+        //enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
     },
     plotOptions: {
         column: {
             stacking: 'percent',
             dataLabels: {
-                enabled: true,
+                enabled: false,
                 color: 'white'
 
             }
@@ -268,7 +250,7 @@ var optionsBelowProfByGrade = {
         gridLineWidth: 0,
 
         title: {
-            text: 'Students By Grade By Score'
+            text: 'Student Scores'
         },
         stackLabels: {
             enabled: true,
@@ -280,10 +262,12 @@ var optionsBelowProfByGrade = {
         labels: false
     },
     tooltip: {
-        enabled: false,
-        formatter: function() {
-            return '<b>'+ this.series.name +': '+ this.y +'<br/>';
-        }
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
     },
     plotOptions: {
         column: {
@@ -291,6 +275,7 @@ var optionsBelowProfByGrade = {
             dataLabels: {
                 enabled: true,
                 color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
             }
         },
         series:{
@@ -336,16 +321,18 @@ var optionsBelowProfByWeek = {
         labels: false
     },
     tooltip: {
-        enabled: false,
-        formatter: function() {
-            return '<b>'+ this.series.name +': '+ this.y +'<br/>';
-        }
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
     },
     plotOptions: {
         column: {
             stacking: 'percent',
             dataLabels: {
-                enabled: true,
+                enabled: false,
                 color: 'white'
             }
         },
@@ -387,7 +374,7 @@ var optionsTeacherGrade = {
             x: -20 //center
         },
         stackLabels: {
-            enabled: true,
+            enabled: false,
             style: {
                 fontWeight: 'bold',
                 color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
@@ -396,16 +383,18 @@ var optionsTeacherGrade = {
         labels: false
     },
     tooltip: {
-        enabled: false,
-        formatter: function() {
-            return '<b>'+ this.series.name +': '+ this.y +'<br/>';
-        }
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: false
     },
     plotOptions: {
         column: {
-            stacking: 'normal',
+            stacking: 'percent',
             dataLabels: {
-                enabled: true,
+                enabled: false,
                 color: 'white',
             }
         },

@@ -42,7 +42,9 @@ proficiency_groups.append('All')
 
 # GRADE LEVELS
 cursor.execute('select distinct GRADE from data order by 1;')
-grades = [r[0] for r in cursor.fetchall()]
+grades = [r[0][4:] for r in cursor.fetchall()]
+cursor.execute('select distinct GRADE from (select GRADE, PRIOR_YEAR_PROFICIENCY from data_new GROUP BY GRADE, PRIOR_YEAR_PROFICIENCY) s where PRIOR_YEAR_PROFICIENCY = \'Below Proficient\' order by 1;')
+bpGrades = [r[0][4:] for r in cursor.fetchall()]
 
 # ATTEMPTS
 cursor.execute('select distinct attempt from data order by 1;')
@@ -181,15 +183,77 @@ def student_attempts(grade,teacher,proficiency,quiz):
 # for s in st:
 # 	print s
 
+####################################################################
+####################################################################
+####################### NEW STUFF PONY V2 ##########################
+####################################################################
+####################################################################
 
 # ASSESSMENTS BY GRADE By SCORE (LAST 3)
 def assessments_by_grade(proficiency):
-	sql = 'select grade, score, count(*) students from ('+
-			'select grade,student,round(avg(score)) score from ('+
-			'select student, grade, assessment, max(round(score)) score from data_new '+
-			'where score <= 4 and assessment in (select assessment from ('+
-			'select s.*, row_number() over (partition by grade order by assessment) rowCnt from ('+
-			'select distinct grade, assessment from data_new) s) t where rowCnt <= 3) and PRIOR_YEAR_PROFICIENCY = \'%s\' '+
-			'group by student, grade, assessment) i group by grade,student) j where score > 0 group by grade, score order by 1,2;' % (proficiency)
+	mydata =  [{
+        'name': '4',
+        'color': "#698B22",
+        'data': []
+    }, {
+        'name': '3',
+        'color': "#9ACD32",
+        'data': []
+    }, {
+        'name': '2',
+        'color': "#4F94CD",
+        'data': []
+    }, {
+        'name': '1',
+        'color': "#36648B",
+        'data': []
+    }];
+	if proficiency <> '':
+		sql = 'select grade, score, count(*) students from (select grade,student,round(avg(score)) score from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from (select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new) s) t where rowCnt <= 3) and PRIOR_YEAR_PROFICIENCY = \'%s\' group by student, grade, assessment) i group by grade,student) j where score > 0 group by grade, score order by 1,2;' % proficiency
+	else:
+		sql = 'select grade, score, count(*) students from (select grade,student,round(avg(score)) score from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from (select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new) s) t where rowCnt <= 3) group by student, grade, assessment) i group by grade,student) j where score > 0 group by grade, score order by 1,2;'
 	cursor.execute(sql)
 	rs = cursor.fetchall()
+	
+	for i in range(1,5):
+		rng = [float(r[2]) for r in rs if r[1]==i]
+		#print(i,rng)
+		for k in mydata:
+			if k['name'] == str(i):
+				k['data'] = rng
+	return mydata
+
+def assessments_by_grade(proficiency):
+	mydata =  [{
+        'name': '4',
+        'color': "#698B22",
+        'data': []
+    }, {
+        'name': '3',
+        'color': "#9ACD32",
+        'data': []
+    }, {
+        'name': '2',
+        'color': "#4F94CD",
+        'data': []
+    }, {
+        'name': '1',
+        'color': "#36648B",
+        'data': []
+    }];
+	if proficiency <> '':
+		sql = 'select grade, score, count(*) students from (select grade,student,round(avg(score)) score from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from (select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new) s) t where rowCnt <= 3) and PRIOR_YEAR_PROFICIENCY = \'%s\' group by student, grade, assessment) i group by grade,student) j where score > 0 group by grade, score order by 1,2;' % proficiency
+	else:
+		sql = 'select grade, score, count(*) students from (select grade,student,round(avg(score)) score from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from (select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new) s) t where rowCnt <= 3) group by student, grade, assessment) i group by grade,student) j where score > 0 group by grade, score order by 1,2;'
+	cursor.execute(sql)
+	rs = cursor.fetchall()
+	
+	for i in range(1,5):
+		rng = [float(r[2]) for r in rs if r[1]==i]
+		#print(i,rng)
+		for k in mydata:
+			if k['name'] == str(i):
+				k['data'] = rng
+	return mydata
+
+#assessments_by_grade('')

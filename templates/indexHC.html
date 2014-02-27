@@ -99,16 +99,15 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Prior Year Proficient Students
+                            <i class="fa fa-bar-chart-o fa-fw"></i> All Students
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div id="containerHC1"></div>
+                            <div id='containerHC1'></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
                 </div>
-
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -116,11 +115,13 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div id="containerHC2"></div>
+                            <div id='containerHC2'></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
                 </div>
+
+
             </div>
         </div>
         <!-- /#page-wrapper -->
@@ -128,9 +129,14 @@
     <!-- /#wrapper -->
 
     <script type="text/javascript">
-    $(document).ready(function(){
-        proficient = new Highcharts.Chart(optionsProfByGrade);
-        belowProficient = new Highcharts.Chart(optionsBelowProfByGrade);
+     $(document).ready(function(){
+        optionsProfByGrade.series = {{seriesAll|safe}}
+        optionsProfByGrade.xAxis.categories = {{grades|safe}}
+        optionsBelowProfByGrade.series = {{seriesBelowProf|safe}}
+        optionsBelowProfByGrade.xAxis.categories = {{bpGrades|safe}}
+
+        new Highcharts.Chart(optionsProfByGrade);
+        new Highcharts.Chart(optionsBelowProfByGrade);
     });
     </script>
 

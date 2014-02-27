@@ -29,6 +29,13 @@
 
     <!-- Helper CSS -->
     <link href="/static/css/helper.css" rel="stylesheet">
+
+    <!-- Datatables + TableTools -->
+    <link href="/static/DataTables-1.9.4/media/css/jquery.dataTables.css" rel="stylesheet">
+    <script src="/static/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
+    <link href="/static/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet">
+    <script src="/static/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
+
     
 
 </head>
@@ -79,7 +86,7 @@
                     <li><a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
                     <li><a href="/teacher"><i class="fa fa-bar-chart-o fa-fw"></i> Teacher Drill Down</a></li>
                     <li><a href="/"><i class="fa fa-table fa-fw"></i> Student Grid</a></li>
-                    <li>
+                    <li class="filter">
                         <a href="#"> Grade Level<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li><a><input type="radio" name="grade">&nbsp&nbspK</input></a></li>
@@ -88,11 +95,11 @@
                             <li><a><input type="radio" name="grade">&nbsp&nbsp3</input></a></li>
                             <li><a><input type="radio" name="grade">&nbsp&nbsp4</input></a></li>
                             <li><a><input type="radio" name="grade">&nbsp&nbsp5</input></a></li>
-                            <li><a><input type="radio" name="grade" checked>&nbsp&nbsp56</input></a></li>                        
+                            <li><a><input type="radio" name="grade" checked>&nbsp&nbsp6</input></a></li>                        
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
-                    <li>
+                    <li class="filter">
                         <a href="#"> November 2013<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li><a><input type="radio" name="asmt">&nbsp&nbspAssessment 1</input></a></li>
@@ -102,7 +109,7 @@
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
-                    <li>
+                    <li class="filter">
                         <a href="#"> December 2013<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li><a><input type="radio" name="asmt">&nbsp&nbspAssessment 1</input></a></li>
@@ -112,7 +119,7 @@
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
-                    <li>
+                    <li class="filter">
                         <a href="#"> January 2014<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li><a><input type="radio" name="asmt">&nbsp&nbspAssessment 1</input></a></li>
@@ -122,7 +129,7 @@
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
-                    <li>
+                    <li class="filter">
                         <a href="#"> February 2014<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li><a><input type="radio" name="asmt">&nbsp&nbspAssessment 1</input></a></li>
@@ -153,8 +160,8 @@
             </div>
 
             <!-- /.1st row - assessment score stacked bars -->
-            <div class="row">
-                <div class="col-lg-12">
+            <div class="row" id="row1">
+                <div class="col-lg-6">
                     <div class="panel panel-default">
 <!--                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Prior Year Proficient Students
@@ -166,10 +173,56 @@
                         <!-- /.panel-body -->
                     </div>
                 </div>
-                
-
-
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <table id="example">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Teacher</th>
+                                    <th>A1</th>
+                                    <th>A2</th>
+                                    <th>A3</th>
+                                    <th>HS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><p>Barajas, Jorge</p></td>
+                                    <td>Teacher A</td>
+                                    <td>1</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>Krismon, Becky</td>
+                                    <td>Teacher A</td>
+                                    <td>1</td>
+                                    <td style="background: limegreen;">3</td>
+                                    <td>2</td>
+                                    <td>3</td>
+                                </tr>
+                            </tbody>
+                        </table>  
+                    </div>
+                </div>
             </div>
+            <div class="row" id="row2">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+<!--                         <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Prior Year Proficient Students
+                        </div> -->
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="containerHC2"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                </div>
+            </div>
+             <!-- 2nd row -->
         </div>
         <!-- /#page-wrapper -->
     </div>
@@ -178,10 +231,30 @@
     <script type="text/javascript">
     $(document).ready(function(){
         teacher = new Highcharts.Chart(optionsTeacherGrade);
+        $("#row2").hide();
     });
     function changeChart(options){
         return new Highcharts.Chart(options)
     };
+    $(document).ready(function() {
+        $('#example').dataTable({
+            "bPaginate": false,
+            "sDom": 'TC<"clear">lfrtip',
+            "oTableTools": {
+                //"aButtons":["print"],
+                //"sSwfPath": "{{url_for('static',filename='copy_csv_xls_pdf.swf')}}"
+                "sSwfPath": "/static/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            },
+            "search":false
+        });
+    });
+    $("p").click(function (){
+        $('#row1').slideToggle("slow");
+        $('#row2').slideToggle("slow");
+        $(".filter").slideToggle("slow");  
+    });
+
+
 
     </script>
 

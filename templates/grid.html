@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pony Express Tracking</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="/static/sb-admin-v2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/sb-admin-v2/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Page-Level Plugin CSS - Dashboard -->
+    <link href="/static/sb-admin-v2/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+    <link href="/static/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
+
+    <!-- SB Admin CSS - Include with every page -->
+    <link href="/static/sb-admin-v2/css/sb-admin.css" rel="stylesheet">
+
+    <!-- d3.js every page -->
+    <script src="/static/d3/d3.min.js"></script>
+
+    <!-- Highcharts.js with jquery every page -->
+    <script src="/static/sb-admin-v2/js/jquery-1.10.2.js"></script>
+    <script src="/static/Highcharts-3.0.9/js/highcharts.js"></script>
+    <script src="/static/js/helperHC.js"></script>    
+
+    <!-- Helper CSS -->
+    <link href="/static/css/helper.css" rel="stylesheet">
+
+    <!-- Datatables + TableTools -->
+    <link href="/static/DataTables-1.9.4/media/css/jquery.dataTables.css" rel="stylesheet">
+    <script src="/static/DataTables-1.9.4/media/js/jquery.dataTables.min.js"></script>
+    <link href="/static/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet">
+    <script src="/static/DataTables-1.9.4/extras/TableTools/media/js/TableTools.min.js"></script>
+    <link rel="stylesheet" href="/static/DataTables-1.9.4/extras/ColVis/media/css/ColVis.css">
+    <script src="/static/DataTables-1.9.4/extras/ColVis/media/js/ColVis.min.js"></script>
+
+    
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Pony Express Tracking</a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+        </nav>
+        <!-- /.navbar-static-top -->
+
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <form name="update" action="/grid" method="POST">
+                <ul class="nav" id="side-menu">
+                    <li><a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
+                    <li><a href="/teacher"><i class="fa fa-bar-chart-o fa-fw"></i> Teacher Drill Down</a></li>
+                    <li><a href="/"><i class="fa fa-table fa-fw"></i> Student Grid</a></li>
+                    <li class="filter">
+                        <a>Grade Level<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                        {% for g in grades %}
+                            {% if g == f_grade %}
+                                <li><a><input type="radio" name="grade" value="{{g}}" onClick="this.form.submit()" checked>&nbsp&nbsp{{g[4:]}}</input></a></li>
+                            {% else %}
+                                <li><a><input type="radio" name="grade" value="{{g}}" onClick="this.form.submit()">&nbsp&nbsp{{g[4:]}}</input></a></li>                        
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                        <!-- /.nav-second-level -->
+                    </li>
+                </ul>
+                </form>
+                <!-- /#side-menu -->
+            </div>
+            <!-- /.sidebar-collapse -->
+        </nav>
+        <!-- /.navbar-static-side -->
+
+        <!--this is where the page wrapper starts-->
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header">Student Grid</h3>
+                </div>
+            </div>
+
+            <!-- /.1st row - assessment score stacked bars -->
+            <div class="row" id="row1">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <table id="example">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Teacher</th>
+                                    <th>RTI</th>
+                                    {% for q in quizzes %}
+                                    <th>{{q}}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in table_vals %}
+                                <tr>
+                                    {% for i in range(qcnt+3) %}
+                                        {% if i == 0 %}
+                                            <td class='tgtStudent' style="cursor: pointer;">{{t[i]}}</td>
+                                        {% elif i > 2 %}
+                                            {% if t[i] == 1 %}
+                                                <td style="background-color:#36648B;color: white;font-weight:bold;">{{t[i]}}</td>
+                                            {% elif t[i] == 2 %}
+                                                <td style="background-color:#4F94CD;color: white;font-weight:bold;">{{t[i]}}</td>
+                                            {% elif t[i] == 3 %}
+                                                <td style="background-color:#9ACD32;color: white;font-weight:bold;">{{t[i]}}</td>
+                                            {% elif t[i] == 4 %}
+                                                <td style="background-color:#698B22;color: white;font-weight:bold;">{{t[i]}}</td>
+                                            {% else %}
+                                                <td style="background-color:white">{{t[i]}}</td>        
+                                            {% endif %}
+                                        {% else %}
+                                            <td>{{t[i]}}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>   
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    {% for q in quizzes %}
+                                    <th></th>
+                                    {% endfor %}
+                               </tr>
+                            </tfoot>
+                        </table>  
+                    </div>
+                </div>
+            </div>
+             <!-- 1st row -->
+             <div class="row" id="row2">
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                             <img src="/static/BlankAvatar.svg.thumb.png" style="float:right;height:100px;padding:10px;">
+                             <h2 style="float:left;" id="studentName">Jorge Barajas</h2>
+                             <div class="btn-group btn-group-xs" style="clear:both;float:left;margin-top:-40px;">
+                                  <div class="btn-group"><button type="button" class="btn btn-default" id="b0">SP</button></div>
+                                  <div class="btn-group"><button type="button" class="btn btn-default" id="b1">504</button></div>
+                                  <div class="btn-group"><button type="button" class="btn btn-default" id="b2">EL</button></div>
+                                  <div class="btn-group"><button type="button" class="btn btn-default" id="b3">IN</button></div>
+                                  <div class="btn-group"><button type="button" class="btn btn-default" id="b4">LU</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div id="containerHC4" style="height:200px;"></div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group"><button type="button" class="btn btn-default">Student<br><h1 id="st-avg">3.2</h1></button></div>
+                                <div class="btn-group"><button type="button" class="btn btn-default">Class<br><h1 id="cl-avg">3.4</h1></button></div>
+                                <div class="btn-group"><button type="button" class="btn btn-default">Grade<br><h1 id="gr-avg">3.5</h1></button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                           <div id="containerHC5"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-default btn-lg" id="backBtn" style="background-color:steelblue;color:white">
+                        Back 
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <script type="text/javascript">
+    
+    $(document).ready(function(){
+        $("#row2").hide();
+    });
+
+    (function($) {
+/*
+ * Function: fnGetColumnData
+ * Purpose:  Return an array of table values from a particular column.
+ * Returns:  array string: 1d data array 
+ * Inputs:   object:oSettings - dataTable settings object. This is always the last argument past to the function
+ *           int:iColumn - the id of the column to extract the data from
+ *           bool:bUnique - optional - if set to false duplicated values are not filtered out
+ *           bool:bFiltered - optional - if set to false all the table data is used (not only the filtered)
+ *           bool:bIgnoreEmpty - optional - if set to false empty values are not filtered from the result array
+ * Author:   Benedikt Forchhammer <b.forchhammer /AT\ mind2.de>
+ */
+    $.fn.dataTableExt.oApi.fnGetColumnData = function ( oSettings, iColumn, bUnique, bFiltered, bIgnoreEmpty ) {
+        // check that we have a column id
+        if ( typeof iColumn == "undefined" ) return new Array();
+        
+        // by default we only wany unique data
+        if ( typeof bUnique == "undefined" ) bUnique = true;
+        
+        // by default we do want to only look at filtered data
+        if ( typeof bFiltered == "undefined" ) bFiltered = true;
+        
+        // by default we do not wany to include empty values
+        if ( typeof bIgnoreEmpty == "undefined" ) bIgnoreEmpty = true;
+        
+        // list of rows which we're going to loop through
+        var aiRows;
+        
+        // use only filtered rows
+        if (bFiltered == true) aiRows = oSettings.aiDisplay; 
+        // use all rows
+        else aiRows = oSettings.aiDisplayMaster; // all row numbers
+
+        // set up data array    
+        var asResultData = new Array();
+        
+        for (var i=0,c=aiRows.length; i<c; i++) {
+            iRow = aiRows[i];
+            var aData = this.fnGetData(iRow);
+            var sValue = aData[iColumn];
+            
+            // ignore empty values?
+            if (bIgnoreEmpty == true && sValue.length == 0) continue;
+
+            // ignore unique values?
+            else if (bUnique == true && jQuery.inArray(sValue, asResultData) > -1) continue;
+            
+            // else push the value onto the result data array
+            else asResultData.push(sValue);
+        }
+        
+        return asResultData;
+    }}(jQuery));
+
+
+    function fnCreateSelect( aData )
+    {
+        var r='<select><option value=""></option>', i, iLen=aData.length;
+        for ( i=0 ; i<iLen ; i++ )
+        {
+            r += '<option value="'+aData[i]+'">'+aData[i]+'</option>';
+        }
+        return r+'</select>';
+    }
+
+         
+    $(document).ready(function() {
+        /* Initialise the DataTable */
+        oTable = $('#example').dataTable( {
+            //"bPaginate": false,
+            "sDom": 'TC<".tgtStudent">lfrtip',
+            //"sDom": '<"top"i>rt<"bottom"flp><"clear">',
+            //"sScrollY": "600px",
+            //"sScrollX": "100%",
+            "bScrollCollapse": true,
+            "aoColumnDefs": [
+              { "sWidth": "200px", "aTargets": [0,1]},
+            ],  
+            "oTableTools": {
+                "aButtons":["copy","print","xls"],
+                "sSwfPath": "/static/DataTables-1.9.4/extras/TableTools/media/swf/copy_csv_xls_pdf.swf"
+            },
+            //"search":false,
+            "oColVis": {
+                "sAlign": "right"
+            },
+
+        } );
+        
+        
+
+            /* Add a select menu for each TH element in the table footer */
+        $("tfoot th").each( function ( i ) {
+            this.innerHTML = fnCreateSelect( oTable.fnGetColumnData(i) );
+            $('select', this).change( function () {
+                oTable.fnFilter( $(this).val(), i );
+            } );
+        } );
+
+                // student drill down functions
+        function big5(student){
+            // this function will change the button background if the student has any of the big5
+            var url = '/api/big5/'+student // return back to this format '1 - First Grade'
+            var vals = JSON.parse(httpGet(url)), i;
+            for(i=0;i<5;i++){
+                if(+vals[i]===1){
+                    $('#b'+String(i)).css('background-color','lightblue')
+                } else {
+                    $('#b'+String(i)).css('background-color','white')
+                }
+            } 
+        }
+
+        // student drill down functions
+        function scores(student){
+            // this function will change the button background if the student has any of the big5
+            var url = '/api/scores/'+student // return back to this format '1 - First Grade'
+            var vals = JSON.parse(httpGet(url));
+            return vals 
+        }
+
+        // get student, class, grade averages
+        function averages(student){
+            var url = '/api/averages/'+student
+            var vals = JSON.parse(httpGet(url));
+            $('#st-avg').text(vals[0]);
+            $('#cl-avg').text(vals[1]);
+            $('#gr-avg').text(vals[2]);
+        }
+
+        $(".tgtStudent").click(function (){
+            var st = $(this).text();
+            big5(st);
+            optionsStudentCurrent.series[0].data = scores(st);
+            averages(st);
+            $('#studentName').text(st)
+            $('#row1').slideToggle("350");
+            $('#row2').slideToggle("350");
+            new Highcharts.Chart(optionsStudentCurrent);
+            new Highcharts.Chart(optionsStudentHistorical);
+            //$(".filter").slideToggle("slow"); 
+            // oTable.fnMultiFilter({"teacher":"Teacher B"}); 
+        });
+
+        $("#backBtn").click(function(){
+            $('#row1').slideToggle("350");
+            $('#row2').slideToggle("350");
+        })
+
+    } );
+    
+    
+
+    </script>
+
+    <!-- Core Scripts - Include with every page -->
+    <script src="/static/sb-admin-v2/js/bootstrap.min.js"></script>
+    <script src="/static/sb-admin-v2/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+    <!-- Page-Level Plugin Scripts - Dashboard -->
+    <script src="/static/sb-admin-v2/js/plugins/morris/raphael-2.1.0.min.js"></script>
+    <script src="/static/sb-admin-v2/js/plugins/morris/morris.js"></script>
+
+    <!-- SB Admin Scripts - Include with every page -->
+    <script src="/static/sb-admin-v2/js/sb-admin.js"></script>
+
+    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
+    <script src="/static/sb-admin-v2/js/demo/dashboard-demo.js"></script>
+
+
+
+</body>
+
+</html>

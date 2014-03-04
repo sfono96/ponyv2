@@ -1,129 +1,487 @@
 
-var width = 1200/2.15, height = 600/2.6, barHeight = 50;
-var margins = {top: height*.05, bottom: height*.10, left: width*.05, right: width*.05};
-var playingWidth = width-margins.left-margins.right;
+// score growth by teacher
+var teacherGrowth = [{
+    name: 'Teacher A',
+    data: [1.2,2.2,2.4]
+},{
+    name: 'Teacher B',
+    data: [1.5,3.2,3.6] 
+},{
+    name: 'Teacher C',
+    data: [2.2,3.1,3.3] 
+}]
 
-//var motherShip = d3.select("#below-proficient-scores").append("svg").attr("height",height).attr("width",width).append("g")
-//var frame = motherShip.append("rect").attr("height",height).attr("width",width).attr("fill","none").attr("stroke","grey")
-
-// main drawing board
-var canvas = d3.select(".below-proficient-scores").append("svg").attr("height",height).attr("width",width).attr("viewBox","0 0 "+width+" "+height).attr("preserveAspectRatio","xMinYMin meet")
-//var frame = canvas.append("rect").attr("height",height).attr("width",width).attr("fill","none").attr("stroke","grey")
-
-// start at point zero - pre transition data
-var data0 = [{grade:"K",t1:0,t2:0,t3:0,t4:0},{grade:"1",t1:0,t2:0,t3:0,t4:0},{grade:"2",t1:0,t2:0,t3:0,t4:0},{grade:"3",t1:0,t2:0,t3:0,t4:0},{grade:"4",t1:0,t2:0,t3:0,t4:0},{grade:"5",t1:0,t2:0,t3:0,t4:0},{grade:"6",t1:0,t2:0,t3:0,t4:0}]
-
-// main data
-var data = [{grade:"K",t1:50,t2:30,t3:10,t4:10},{grade:"1",t1:40,t2:20,t3:30,t4:10},{grade:"2",t1:30,t2:25,t3:25,t4:20},{grade:"3",t1:30,t2:35,t3:30,t4:5},{grade:"4",t1:45,t2:30,t3:10,t4:15},{grade:"5",t1:20,t2:25,t3:45,t4:10},{grade:"6",t1:10,t2:30,t3:55,t4:5}]
-
-// drill-in data
-var data1 = [{grade:"1/17",t1:50,t2:20,t3:20,t4:10},{grade:"1/24",t1:40,t2:20,t3:30,t4:10},{grade:"1/31",t1:50,t2:25,t3:15,t4:10},{grade:"2/7",t1:35,t2:35,t3:20,t4:10},{grade:"2/14",t1:50,t2:30,t3:10,t4:10}]
-
-// scales and axes
-var x = d3.scale.ordinal().rangeRoundBands([margins.left,width-margins.right])
-var y = d3.scale.linear().rangeRound([height-margins.bottom,margins.top])
-var color = d3.scale.ordinal().range(["#36648B", "#4F94CD", "#5CACEE","#63B8FF"]).domain(["t1","t2","t3","t4"]) //green,yellow,red = "#33CC33", "#FFFF4D", "#FF4D4D"
-var xAxis = d3.svg.axis().scale(x).orient("bottom")
-var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(d3.format("%"));
-
-clicked = false, minimized = false;
-
-// do the stacking here (for each data set above)
-data0.forEach(function(d){
-    var y0 = 0;
-    d.tiers = color.domain().map(function(name){return {name:name, y0:y0, y1:y0+= +d[name]}}) // incrementing new y starting pos
-    d.total = d.tiers[d.tiers.length-1].y1
-})
-
-data.forEach(function(d){
-    var y0 = 0;
-    d.tiers = color.domain().map(function(name){return {name:name, y0:y0, y1:y0+= +d[name]}}) // incrementing new y starting pos
-    d.total = d.tiers[d.tiers.length-1].y1
-})
-
-data1.forEach(function(d){
-    var y0 = 0;
-    d.tiers = color.domain().map(function(name){return {name:name, y0:y0, y1:y0+= +d[name]}}) // incrementing new y starting pos
-    d.total = d.tiers[d.tiers.length-1].y1
-})
-
-//data.sort(function(a, b) { return b.total - a.total; }); //???
-
-// set the domains
-x.domain(data.map(function(d){return d.grade;}));
-y.domain([0,d3.max(data0,function(d){return d.total;})]);
-
-var widthDiscount = .80 
-var barWidth = x.rangeBand()*widthDiscount
-var barMarg = x.rangeBand()*(1-widthDiscount)/2
-
-// x axis
-var xax = canvas.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + (height-margins.bottom) + ")")
-  .call(xAxis);
-
-// grade column group - start with pre transition data set
-var grades = canvas.selectAll(".grade").data(data0).enter().append("g").attr("class","g")
-        .attr("transform", function(d) { return "translate(" + x(d.grade) + ",0)"; })
-        .on("click",function(d){return animateMe(grades,stacks,xax)})
-        //.on("dblclick",function(d){return moveIt(canvas)})
-        .on("mouseover",function(d){return d3.select(this).attr("opacity",".7")})
-        .on("mouseout",function(d){return d3.select(this).attr("opacity","1")});
-
-var stacks = grades.selectAll("rect")
-    .data(function(d) { return d.tiers; }).enter().append("rect")
-    .attr("width", barWidth)
-    .attr("x",barMarg)
-    .attr("y", function(d) { return y(d.y1+.5); })
-    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-    //.attr("stroke","white")
-    .style("fill", function(d) { return color(d.name); });
-
-// opening transition to main data set
-y.domain([0,d3.max(data,function(d){return d.total;})]);
-        grades.data(data).enter()
-        stacks.data(function(d){return d.tiers}).enter()
-        stacks.transition().duration(1000)
-            .attr("y", function(d) { return y(d.y1); })
-            .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-            .style("fill",function(d) { return color(d.name); });
-
-function animateMe(grades,stacks,xax){
-    if(clicked){
-        y.domain([0,d3.max(data,function(d){return d.total;})]);
-        x.domain(data.map(function(d){return d.grade;}));
-        barWidth = x.rangeBand()*widthDiscount
-        grades.data(data0).enter()
-        xax.transition().duration(500).call(xAxis)
-        grades.data(data).enter()
-        stacks.data(function(d){return d.tiers}).enter()
-        stacks.transition().duration(500)
-            .attr("y", function(d) { return y(d.y1); })
-            .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-            .attr("width",barWidth)
-            .style("fill",function(d) { return color(d.name); });
-        grades.transition().duration(500).attr("transform", function(d) { return "translate(" + x(d.grade) + ",0)"; })
-        clicked = false
+Highcharts.setOptions({
+    chart: {
+        style: {
+            fontFamily: 'Arial'
+        }
     }
-    else {
-        y.domain([0,d3.max(data1,function(d){return d.total;})]);
-        x.domain(data1.map(function(d){return d.grade;}));
-        barWidth = x.rangeBand()*widthDiscount
-        grades.data(data0).enter()
-        xax.transition().duration(500).call(xAxis)
-        grades.data(data1).enter()
-        stacks.data(function(d){return d.tiers}).enter()
-        stacks.transition().duration(500)
-            .attr("y", function(d) { return y(d.y1); })
-            .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-            .attr("width",barWidth)
-            .style("fill",function(d) { return color(d.name); });
-        grades.transition().duration(500).attr("transform", function(d) { return "translate(" + x(d.grade) + ",0)"; });
-        clicked = true
-    }
+});
+
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
 }
 
+////////////////////////////////////////////
+////////////////// X AXIS //////////////////
+////////////////////////////////////////////
+
+var grades = ['K','1','2','3','4','5','6']
+var grades2 = ['1','2','3','4','5','6']
+var gradesText = ['1 - First Grade','2 - Second Grade','3 - Third Grade','4 - Fourth Grade','5 - Fifth Grade','6 - Sixth Grade']
+var pgradesText = ['4 - Fourth Grade','5 - Fifth Grade','6 - Sixth Grade']
+var weeks = ['1/3','1/10','1/17','1/24','1/31','2/7']
+var teachers = ['Teacher A','Teacher B','Teacher C','Teacher D']
+
+////////////////////////////////////////////
+////////////////// CHARTS //////////////////
+////////////////////////////////////////////
+
+var proficient, belowProficient, teacher;
+
+////////////////////////////////////////////
+///////////////// OPTIONS //////////////////
+////////////////////////////////////////////
+
+var optionsProfByGrade, optionsProfByWeek, optionsBelowProfByGrade, optionsBelowProfByWeek;
+var optionsTeacherGrade, optionsTeacherGrowth;
+
+// Proficient By Grade Options
+var optionsProfByGrade = {
+    chart: {type: 'column',renderTo: 'containerHC1'},
+    title: {text: ''},
+    xAxis: {
+        categories: []
+    },
+    yAxis: {min: 0,gridLineWidth: 0,
+        title: {text: 'Student Scores'},
+        stackLabels: {enabled: true,
+            style: {fontWeight: 'bold',color: 'gray'},
+            //formatter:function(){return this.total;}
+        },
+        labels: true
+    },
+    tooltip: {pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',shared: true},
+    plotOptions: {
+        column: {
+            stacking: 'percent',
+            dataLabels: {
+                enabled: true,
+                color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
+            }
+        },
+        series:{
+            cursor: 'pointer',
+            point:{
+                events:{
+                    click: //function(){alert ('Category: '+ this.x +', value: '+ this.y);}
+                    //click: function(){proficient = new Highcharts.Chart(optionsProfByWeek);}
+                    function(){
+                        // this function will change the options
+                        optionsProfByWeek.title.text = this.category; // New Title for grade
+                        url = '/api/dash1/all/'+gradesText[this.x] // return back to this format '1 - First Grade'
+                        optionsProfByWeek.series = JSON.parse(httpGet(url))[0] // Get the new data from the api (pass the url)
+                        optionsProfByWeek.xAxis.categories = JSON.parse(httpGet(url))[1]
+                        new Highcharts.Chart(optionsProfByWeek) 
+                    }
+                }
+            }
+        }
+    },
+    series: []
+};
+
+// Proficient By Week Options
+var optionsProfByWeek = {
+    chart: {
+        type: 'column',
+        renderTo: 'containerHC1'
+    },
+    title: {
+        text: '',
+        align: 'left'
+    },
+    xAxis: {
+        categories: weeks
+    },
+    yAxis: {
+        min: 0,
+        gridLineWidth: 0,
+
+        title: {
+            text: 'Students By Week By Score'
+        },
+        stackLabels: {
+            enabled: false,
+            style: {
+                fontWeight: 'bold',
+                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+            }
+        },
+        labels: false
+    },
+    tooltip: {
+        //enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
+    },
+    plotOptions: {
+        column: {
+            stacking: 'percent',
+            dataLabels: {
+                enabled: true,
+                color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
+
+            }
+        },
+        series:{
+            cursor: 'pointer',
+            point:{
+                events:{
+                    //click: function(){alert ('Category: '+ this.category +', value: '+ this.y);}
+                    click: function(){proficient = new Highcharts.Chart(optionsProfByGrade);}
+                }
+            }
+        }
+    },
+    series: []
+};
+
+// Proficient By Grade Options
+var optionsBelowProfByGrade = {
+    chart: {
+        type: 'column',
+        renderTo: 'containerHC2'
+    },
+    title: {
+        text: ''
+    },
+    xAxis: {
+        categories: grades
+    },
+    yAxis: {
+        min: 0,
+        gridLineWidth: 0,
+
+        title: {
+            text: 'Student Scores'
+        },
+        stackLabels: {
+            enabled: true,
+            style: {
+                fontWeight: 'bold',
+                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+            }
+        },
+        labels: false
+    },
+    tooltip: {
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
+    },
+    plotOptions: {
+        column: {
+            stacking: 'percent',
+            dataLabels: {
+                enabled: true,
+                color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
+            }
+        },
+        series:{
+            cursor: 'pointer',
+            point:{
+                events:{
+                    //click: function(){alert ('Category: '+ this.category +', value: '+ this.y);}
+                    click: function(){
+                        // this function will change the options
+                        optionsBelowProfByWeek.title.text = this.category; // New Title for grade
+                        url = '/api/dash1/belowProf/'+pgradesText[this.x] // return back to this format '1 - First Grade'
+                        optionsBelowProfByWeek.series = JSON.parse(httpGet(url))[0] // Get the new data from the api (pass the url)
+                        optionsBelowProfByWeek.xAxis.categories = JSON.parse(httpGet(url))[1]
+                        new Highcharts.Chart(optionsBelowProfByWeek) 
+                    }
+                }
+            }
+        }
+    },
+    series: []
+};
+
+// Below Proficient By Week Options
+var optionsBelowProfByWeek = {
+    chart: {
+        type: 'column',
+        renderTo: 'containerHC2'
+    },
+    title: {
+        text: 'Grade Level: 3',
+        align: 'left'
+    },
+    xAxis: {
+        categories: weeks
+    },
+    yAxis: {
+        min: 0,
+        gridLineWidth: 0,
+
+        title: {
+            text: 'Students By Week By Score'
+        },
+        stackLabels: {
+            enabled: true,
+            style: {
+                fontWeight: 'bold',
+                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+            }
+        },
+        labels: false
+    },
+    tooltip: {
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: true
+    },
+    plotOptions: {
+        column: {
+            stacking: 'percent',
+            dataLabels: {
+                enabled: true,
+                color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
+
+            }
+        },
+        series:{
+            cursor: 'pointer',
+            point:{
+                events:{
+                    //click: function(){alert ('Category: '+ this.category +', value: '+ this.y);}
+                    click: function(){new Highcharts.Chart(optionsBelowProfByGrade);}
+                }
+            }
+        }
+    },
+    series: []
+};
+
+
+////////////////////////////////////////////////////// TEACHER DRILL DOWN //////////////////////////////////////////////////////
+
+// Teacher Grade
+var optionsTeacherGrade = {
+    chart: {
+        type: 'column',
+        renderTo: 'containerHC3',
+        style:{fontFamily:'Roboto'}
+    },
+    title: {
+        text: 'Fractions - February 2014'
+    },
+    xAxis: {
+        categories: teachers,
+        labels:{enabled: false},
+    },
+    yAxis: {
+        min: 0,
+        gridLineWidth: 0,
+
+        title: {
+            text: 'Students By Teacher By Score',
+            x: 0 //center
+        },
+        stackLabels: {
+            enabled: false,
+            style: {
+                fontWeight: 'bold',
+                color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+            }
+        },
+        labels: true
+    },
+    tooltip: {
+        // enabled: false,
+        // formatter: function() {
+        //     return '<b>'+ this.series.name +': '+ this.y +'<br/>';
+        // },
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br/>',
+        shared: false
+    },
+    legend:{enabled:false},
+    plotOptions: {
+        column: {
+            stacking: 'percent',
+            dataLabels: {
+                enabled: true,
+                color: 'white',
+                formatter: function(){return Math.round(this.percentage,2)+'%';}
+            }
+        },
+        series:{
+            cursor: 'pointer',
+            point:{
+                events:{
+                    //click: function(){alert ('Category: '+ this.category +', value: '+ this.series.name);}
+                    click: function(){ oTable.fnMultiFilter({"teacher":this.category,"hs":this.series.name}); }
+                    //click: function(){teacher = new Highcharts.Chart(optionsProfByWeek);}
+                }
+            }
+        }
+    },
+    series: []
+};
+
+var optionsTeacherGrowth = {
+    chart: {
+        type: 'line',
+        renderTo: 'containerHC3',
+    },
+    title: {
+        text: ''
+    },
+    xAxis: {
+        categories: ['Attempt 1', 'Attempt 2', 'Attempt 3']
+    },
+    yAxis: {
+        // min: ,
+        // max: 4,
+        gridLineWidth: .25,
+        title: {
+            text: 'Growth By Teacher'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }]
+    },
+    plotOptions:{series:{lineWidth:5,marker:{radius:6,fillColor:'#FFFFFF',lineWidth:4,lineColor:null,symbol:'circle'}}},
+    legend: {
+        enabled: false,
+        // layout: 'vertical',
+        // align: 'right',
+        // verticalAlign: 'middle',
+        // borderWidth: 0
+    },
+    series: teacherGrowth
+};
+// chart.renderToDiv, xAxis.categories,yAxis.title.text,plotOptions.series.point.events.click
+
+///////////////////////////// STUDENT DRILL DOWN CHARTS ////////////////////////////////////////////////
+
+var optionsStudentCurrent = {
+    chart: {
+        // plotBackgroundColor: null,
+        // plotBorderWidth: null,
+        // plotShadow: false,
+        margin: [0, 0, 0, 0],
+        spacingTop: 0,
+        spacingBottom: 0,
+        spacingLeft: 0,
+        spacingRight: 0,
+        renderTo: 'containerHC4'
+    },
+    title: {
+        text: ''
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.y}</b>'
+    },
+    plotOptions: {
+        pie: {
+            size: '100%',
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true
+        }
+    },
+    legend:{enabled:true,layout:'vertical',align:'right',verticalAlign:"middle"},
+    series: [{  
+        type: 'pie',
+        name: 'Score Distribution',
+        data: [
+            ['4',45.0],
+            ['3',26.8],
+            ['2',8.5],
+            ['1',6.2],
+        ]
+    }]
+}
+
+var optionsStudentHistorical = {
+    chart: {
+        type: 'line',
+        renderTo: 'containerHC5',
+    },
+    title: {
+        text: 'Historical: CRT Math'
+    },
+    xAxis: {
+        categories: ['2011', '2012', '2013']
+    },
+    yAxis: {
+        // min: ,
+        // max: 4,
+        gridLineWidth: .25,
+        title: {
+            text: 'Growth By Teacher'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }]
+    },
+    plotOptions:{series:{lineWidth:5,marker:{radius:6,fillColor:'#FFFFFF',lineWidth:4,lineColor:null,symbol:'circle'}}},
+    legend: {
+        enabled: true,
+        // layout: 'vertical',
+        // align: 'right',
+        // verticalAlign: 'middle',
+        // borderWidth: 0
+    },
+    series: [{
+        name: 'Student',
+        data:[randomIntFromInterval(160,180),randomIntFromInterval(160,182),randomIntFromInterval(165,185)]
+    },{
+        name: 'School Avg',
+        data:[164.2,167.3,174.3],
+        dashStyle:'Dash'
+    },{
+        name: 'State Avg',
+        data:[167.2,171.3,179.3],
+        dashStyle:'Dot'
+    }]
+};
+
+function httpGet(theUrl)
+{
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send( null );
+    return xmlHttp.responseText;
+}
+
+// post_to_url('/contact/', {name: 'Johnny Bravo'});
 
 
 
@@ -140,41 +498,17 @@ function animateMe(grades,stacks,xax){
 
 
 
-// main drawing board
-var canvas2 = d3.select(".below-proficient-scores2").append("svg").attr("height",height).attr("width",width).attr("viewBox","0 0 "+width+" "+height).attr("preserveAspectRatio","xMinYMin meet")
-//var frame = canvas.append("rect").attr("height",height).attr("width",width).attr("fill","none").attr("stroke","grey")
 
-// x axis
-canvas2.append("g")
-  .attr("class", "x axis")
-  .attr("transform", "translate(0," + (height-margins.bottom) + ")")
-  .call(xAxis);
-  
-// grade column group - start with pre transition data set
-var grades2 = canvas2.selectAll(".grade").data(data0).enter().append("g").attr("class","g")
-        .attr("transform", function(d) { return "translate(" + x(d.grade) + ",0)"; })
-        //.on("click",function(d){return animateMe(grades,stacks)})
-        //.on("dblclick",function(d){return moveIt(canvas)})
-        .on("mouseover",function(d){return d3.select(this).attr("opacity",".7")})
-        .on("mouseout",function(d){return d3.select(this).attr("opacity","1")});
 
-var stacks2 = grades2.selectAll("rect")
-    .data(function(d) { return d.tiers; }).enter().append("rect")
-    .attr("width", barWidth)
-    .attr("x",barMarg)
-    .attr("y", function(d) { return y(d.y1+.5); })
-    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-    //.attr("stroke","white")
-    .style("fill", function(d) { return color(d.name); });
 
-// opening transition to main data set
-y.domain([0,d3.max(data,function(d){return d.total;})]);
-        grades2.data(data).enter()
-        stacks2.data(function(d){return d.tiers}).enter()
-        stacks2.transition().duration(1000)
-            .attr("y", function(d) { return y(d.y1); })
-            .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-            .style("fill",function(d) { return color(d.name); })
+
+
+
+
+
+
+
+
 
 
 

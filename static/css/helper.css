@@ -3,3 +3,9 @@
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
+.tgtStudent:hover {
+	background:lightblue;
+	/*font: white;*/
+	font-weight: bold;
+}
+

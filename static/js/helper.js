@@ -434,7 +434,13 @@ var optionsStudentHistorical = {
         text: 'Historical: CRT Math'
     },
     xAxis: {
-        categories: ['2011', '2012', '2013']
+        categories: ['2011', '2012', '2013','2014'],
+        plotLines: [{
+            color: 'orange',
+            width: 4,
+            value: 2.5,
+            dashStyle:'Dash'
+        }]
     },
     yAxis: {
         // min: ,
@@ -459,14 +465,14 @@ var optionsStudentHistorical = {
     },
     series: [{
         name: 'Student',
-        data:[randomIntFromInterval(160,180),randomIntFromInterval(160,182),randomIntFromInterval(165,185)]
+        data:[randomIntFromInterval(160,180),randomIntFromInterval(160,182),randomIntFromInterval(165,185),randomIntFromInterval(160,190)]
     },{
         name: 'School Avg',
-        data:[164.2,167.3,174.3],
-        dashStyle:'Dash'
+        data:[164.2,167.3,174.3,175.3],
+        dashStyle:'Dot'
     },{
         name: 'State Avg',
-        data:[167.2,171.3,179.3],
+        data:[167.2,171.3,179.3,181.2],
         dashStyle:'Dot'
     }]
 };
@@ -482,6 +488,9 @@ function httpGet(theUrl)
 }
 
 // post_to_url('/contact/', {name: 'Johnny Bravo'});
+
+
+
 
 
 

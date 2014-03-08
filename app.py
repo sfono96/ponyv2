@@ -40,6 +40,28 @@ def grid(grade='1 - First Grade'):
 	qcnt = len(relevant_assessments)
 	return render_template('grid.html',table_vals=table_vals,quizzes=relevant_assessments,qcnt=qcnt,grades=grades,f_grade=f_grade)
 
+# testing out lighter weight nav system to see if helps with the page load
+@app.route('/teacher2',methods=['GET','POST'])
+def t2():
+	return render_template('teacher2.html')
+
+# testing out common core view
+@app.route('/domain',methods=['GET','POST'])
+def domain():
+	return render_template('domain.html')
+
+# testing out common core view
+@app.route('/domain/cluster',methods=['GET','POST'])
+def cluster():
+	return render_template('cluster.html')
+
+# testing out common core view
+@app.route('/domain/cluster/standard',methods=['GET','POST'])
+def standard():
+	return render_template('standard.html')
+
+
+
 ##############################################
 ####### API ROUTES RETURN JSON STRINGS #######
 ##############################################

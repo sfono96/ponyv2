@@ -89,41 +89,94 @@
 
         <!--this is where the page wrapper starts-->
         <div id="page-wrapper">
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-lg-12">
                     <h3 class="page-header">Dashboard</h3>
                 </div>
-            </div>
+            </div> -->
 
             <!-- /.1st row - assessment score stacked bars -->
             <div class="row">
-                <div class="col-lg-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Recent Performance - All Students
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id='containerHC1'></div>
-                        </div>
-                        <!-- /.panel-body -->
+                <div class="col-lg-2">
+                    <h2 class="page-header">Standard</h2>
+                </div>
+                <div class="col-lg-3">
+                    <h2 class="page-header">Assessments Given</h2>
+                </div>
+                <div class="col-lg-3">
+                    <h2 class="page-header" style="text-align:center">Students Mastering</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-2">
+                    <ul class="nav nav-pills nav-stacked">
+                      <li class="inactive">
+                        <a href="/" class="ttip" data-toggle="tooltip" data-placement="top" title="Count To 100 By Ones & By Tens">
+                          <h4 style="margin-top:0px">K.CC.1</h4>
+                        </a>
+                      </li>
+                    </ul>
+
+                </div>
+                <div class="col-lg-3">
+                    <div class="col-lg-10">
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#4F94CD"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#9ACD32"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#9ACD32"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>
                     </div>
                 </div>
-<!--                 <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Recent Performance - Prior Year Below Proficient Students
-                        </div>
-
-                        <div class="panel-body">
-                            <div id='containerHC2'></div>
-                        </div>
-
-                    </div>
-                </div> -->
-
-
+                <div class="col-lg-3">
+                     <h1 style="text-align:center;margin-top:0px"><svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>&nbsp95%</h1>
+                </div>
             </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="#" class="ttip" data-toggle="tooltip" data-placement="top" title="Count forward beginning from a given number within the known sequence (instead of having to begin at 1).">
+                              <h4 style="margin-top:0px">K.CC.2</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <div class="col-lg-10">
+<!--                         <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#4F94CD"/></svg> -->
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px">-</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-2">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="#" class="ttip" data-toggle="tooltip" data-placement="top" title="Write numbers from 0 to 20. Represent a number of objects with a written numeral 0–20 (with 0 representing a count of no objects).">
+                              <h4 style="margin-top:0px">K.CC.3</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <div class="col-lg-10">
+<!--                         <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>
+                        <svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#4F94CD"/></svg> -->
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px">-</h1>
+                </div>
+            </div>
+            <div class="row">
+                <a href="/domain/cluster"><button type="button" class="btn btn-default btn-lg" style="background-color:steelblue;color:white">Back</button></a>
+            </div>
+
         </div>
         <!-- /#page-wrapper -->
     </div>
@@ -131,6 +184,7 @@
 
     <script type="text/javascript">
      $(document).ready(function(){
+        $('.ttip').tooltip();
         optionsProfByGrade.series = {{seriesAll|safe}}
         optionsProfByGrade.xAxis.categories = {{grades|safe}}
         optionsBelowProfByGrade.series = {{seriesBelowProf|safe}}

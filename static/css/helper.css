@@ -8,4 +8,10 @@
 	/*font: white;*/
 	font-weight: bold;
 }
-
+.domain{
+	cursor:pointer;
+}
+.domain:hover{
+	background:lightblue;
+	font-weight: bold;
+}

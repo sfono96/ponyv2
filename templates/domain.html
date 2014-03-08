@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pony Express Tracking</title>
+
+    <!-- Core CSS - Include with every page -->
+    <link href="/static/sb-admin-v2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/sb-admin-v2/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- Page-Level Plugin CSS - Dashboard -->
+    <link href="/static/sb-admin-v2/css/plugins/morris/morris-0.4.3.min.css" rel="stylesheet">
+    <link href="/static/sb-admin-v2/css/plugins/timeline/timeline.css" rel="stylesheet">
+
+    <!-- SB Admin CSS - Include with every page -->
+    <link href="/static/sb-admin-v2/css/sb-admin.css" rel="stylesheet">
+
+    <!-- d3.js every page -->
+    <script src="/static/d3/d3.min.js"></script>
+
+    <!-- Highcharts.js with jquery every page -->
+    <script src="/static/sb-admin-v2/js/jquery-1.10.2.js"></script>
+    <script src="/static/Highcharts-3.0.9/js/highcharts.js"></script>
+    <script src="/static/js/helper.js"></script>    
+
+    <!-- Helper CSS -->
+    <link href="/static/css/helper.css" rel="stylesheet">
+    
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Pony Express Tracking</a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+        </nav>
+        <!-- /.navbar-static-top -->
+
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li><a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
+                    <li><a href="/teacher"><i class="fa fa-bar-chart-o fa-fw"></i> Teacher Drill Down</a></li>
+                    <li><a href="/grid"><i class="fa fa-table fa-fw"></i> Student Grid</a></li>
+                    <li><a href="/domain"><i class="fa fa-table fa-fw"></i> Common Core Test</a></li>
+                </ul>
+                <!-- /#side-menu -->
+            </div>
+            <!-- /.sidebar-collapse -->
+        </nav>
+        <!-- /.navbar-static-side -->
+
+        <!--this is where the page wrapper starts-->
+        <div id="page-wrapper">
+            <!-- <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="page-header">Dashboard</h3>
+                </div>
+            </div> -->
+
+            <!-- /.1st row - assessment score stacked bars -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <h2 class="page-header">Domain</h2>
+                </div>
+                <div class="col-lg-4">
+                    <h2 class="page-header">Standards Taught</h2>
+                </div>
+                <div class="col-lg-3">
+                    <h2 class="page-header" style="text-align:center">Students Mastering</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-pills nav-stacked">
+                      <li class="inactive">
+                        <a href="/domain/cluster">
+                          <span class="badge pull-right">K.CC</span>
+                          <h4 style="margin-top:0px">Counting & Cardinality</h4>
+                        </a>
+                      </li>
+                    </ul>
+
+                </div>
+                <div class="col-lg-4">
+                    <div class="col-lg-10">
+                        <div class="progress" style="margin-top:10px">
+                            <div class="progress-bar progress-bar-info" style="width: 43%">43%</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="margin-top:10px"><h4 style="margin-top:0px;">(3/7)</h4></div>
+                </div>
+                <div class="col-lg-3">
+                     <h1 style="text-align:center;margin-top:0px"><svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#9ACD32"/></svg>&nbsp80%</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="/domain/cluster">
+                              <span class="badge pull-right">K.OA</span>
+                              <h4 style="margin-top:0px">Operations & Algebraic Thinking</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <div class="col-lg-10">
+                        <div class="progress" style="margin-top:10px">
+                            <div class="progress-bar progress-bar-info" style="width: 20%">20%</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="margin-top:10px"><h4 style="margin-top:0px;">(1/5)</h4></div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px"><svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#4F94CD"/></svg>&nbsp60%</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="/domain/cluster">
+                              <span class="badge pull-right">K.NBT</span>
+                              <h4 style="margin-top:0px">Numbers & Operations In Base Ten</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <div class="col-lg-10">
+                        <div class="progress" style="margin-top:10px">
+                            <div class="progress-bar progress-bar-info" style="width: 0%">0%</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="margin-top:10px"><h4 style="margin-top:0px;">(0/1)</h4></div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px">-</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="/domain/cluster">
+                              <span class="badge pull-right">K.MD</span>
+                              <h4 style="margin-top:0px">Measurement & Data</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <div class="col-lg-10">
+                        <div class="progress" style="margin-top:10px">
+                            <div class="progress-bar progress-bar-info" style="width: 33%">33%</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="margin-top:10px"><h4 style="margin-top:0px;">(1/3)</h4></div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px"><svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#36648B"/></svg>&nbsp50%</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li class="inactive">
+                            <a href="/domain/cluster">
+                              <span class="badge pull-right">K.G</span>
+                              <h4 style="margin-top:0px">Geometry</h4>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <div class="col-lg-10">
+                        <div class="progress" style="margin-top:10px">
+                            <div class="progress-bar progress-bar-info" style="width: 67%">67%</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2" style="margin-top:10px"><h4 style="margin-top:0px;">(4/6)</h4></div>
+                </div>
+                <div class="col-lg-3">
+                    <h1 style="text-align:center;margin-top:0px"><svg height="30" width="30"><circle cx="15" cy="15" r="15" fill="#698B22"/></svg>&nbsp95%</h1>
+                </div>
+            </div>
+
+        </div>
+        <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <script type="text/javascript">
+     $(document).ready(function(){
+        optionsProfByGrade.series = {{seriesAll|safe}}
+        optionsProfByGrade.xAxis.categories = {{grades|safe}}
+        optionsBelowProfByGrade.series = {{seriesBelowProf|safe}}
+        optionsBelowProfByGrade.xAxis.categories = {{bpGrades|safe}}
+        new Highcharts.Chart(optionsProfByGrade);
+        new Highcharts.Chart(optionsBelowProfByGrade);
+    });
+    </script>
+
+    <!-- Core Scripts - Include with every page -->
+    <script src="/static/sb-admin-v2/js/bootstrap.min.js"></script>
+    <script src="/static/sb-admin-v2/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+    <!-- Page-Level Plugin Scripts - Dashboard -->
+    <script src="/static/sb-admin-v2/js/plugins/morris/raphael-2.1.0.min.js"></script>
+    <script src="/static/sb-admin-v2/js/plugins/morris/morris.js"></script>
+
+    <!-- SB Admin Scripts - Include with every page -->
+    <script src="/static/sb-admin-v2/js/sb-admin.js"></script>
+
+    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
+    <script src="/static/sb-admin-v2/js/demo/dashboard-demo.js"></script>
+
+
+
+</body>
+
+</html>

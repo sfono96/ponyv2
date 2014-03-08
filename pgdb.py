@@ -4,7 +4,7 @@ from math import trunc
 
 ############ DB CONNECTION ############ 
 
-production = True # set this to true if pushing changes to production server (heroku) else keep false on development box
+production = False # set this to true if pushing changes to production server (heroku) else keep false on development box
 
 if production == False:
 
@@ -135,7 +135,6 @@ def assessments_by_grade(proficiency):
 	
 	for i in range(1,5):
 		rng = [float(r[2]) for r in rs if r[1]==i]
-		#print(i,rng)
 		for k in mydata:
 			if k['name'] == str(i):
 				k['data'] = rng
@@ -163,20 +162,16 @@ def assessments_by_recent(grade,proficiency):
 		sql = 'select assessment, score, count(*) students from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from ( select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new ) s ) t where rowCnt <= 8) and PRIOR_YEAR_PROFICIENCY = \'%s\' group by student, grade, assessment) s where grade = \'%s\' group by assessment, score order by assessment, score' %(proficiency,grade)
 	else:
 		sql = 'select assessment, score, count(*) students from (select student, grade, assessment, max(round(score)) score from data_new where score <= 4 and assessment in (select assessment from ( select s.*, row_number() over (partition by grade order by assessment) rowCnt from (select distinct grade, assessment from data_new ) s ) t where rowCnt <= 8) group by student, grade, assessment) s where grade = \'%s\' group by assessment, score order by assessment, score' %(grade)
-	#print sql
 	cursor.execute(sql)
 	rs = cursor.fetchall()
-	print sql	
 	for i in range(1,5):
 		rng = [float(r[2]) for r in rs if r[1]==i]
-		#print(i,rng)
 		for k in mydata:
 			if k['name'] == str(i):
 				k['data'] = rng
 
 	# keep tab of recents
 	recents = list(set([r[0] for r in rs])) # distinct list of assessments
-	#print [mydata,recents]
 	return [mydata,recents]
 
 ################## TEACHER DRILL DOWN ##################
@@ -204,7 +199,6 @@ def single_assessment(grade,assessment):
 	teachers = sorted(list(set([r[0] for r in rs])))
 	for i in range(1,5):
 		rng = [float(r[2]) for r in rs if r[1]==i]
-		print(i,rng)
 		for k in myseries:
 			if k['name'] == str(i):
 				k['data'] = rng
@@ -213,7 +207,7 @@ def single_assessment(grade,assessment):
 
 def single_assessment_table(grade,assessment):
 	#sql = 'select student, teacher,max(case when attempt = 1 then score end) A1,max(case when attempt = 2 then score end) A2,max(case when attempt = 3 then score end) A3,max(case when attempt in (1,2,3) then score end) HS from data_new where score <= 4 and grade = \'%s\' and assessment = \'%s\' group by teacher, student order by 1,2' %(grade,assessment)
-	sql = 'select d.student,d.teacher, case when sped is not null or \"504\" is not null or ell is not null or incidents > 0 then \'Tier 3\' end \"Tier 3\" ,max(case when attempt = 1 then score end) A1,max(case when attempt = 2 then score end) A2,max(case when attempt = 3 then score end) A3,max(case when attempt in (1,2,3) then score end) HS from data_new d left join student_attributes a on a.student = d.student where score <= 4 and grade = \'%s\' and assessment = \'%s\' group by d.teacher, d.student ,case when sped is not null or \"504\" is not null or ell is not null or incidents > 0 then \'Tier 3\' end order by 1,2' %(grade,assessment)
+	sql = 'select d.student,d.teacher, a.tier RTI ,max(case when attempt = 1 then score end) A1,max(case when attempt = 2 then score end) A2,max(case when attempt = 3 then score end) A3,max(case when attempt in (1,2,3) then score end) HS from data_new d left join student_tiers a on a.student = d.student where score <= 4 and grade = \'%s\' and assessment = \'%s\' group by d.teacher, d.student ,a.tier order by 1,2' %(grade,assessment)
 	cursor.execute(sql)
 	rs = cursor.fetchall()
 	mydata = []	
@@ -259,7 +253,6 @@ def score_distribution(student):
 	rs = cursor.fetchall()
 	for d in mydata:
 		for r in rs:
-			print str(float(r[0]))
 			if str(float(r[0])) == d['name']:
 				d['y'] = float(r[1])		
 	return mydata
@@ -268,14 +261,12 @@ def averages(student):
 	sql = 'select round(avg(score),2) score from (select assessment, max(round(score)) score from data_new where student = \'%s\' group by assessment) s union all select round(avg(score),2) score from (select student, assessment, max(round(score)) score from data_new where teacher = (select distinct teacher from data_new where student = \'%s\') group by student, assessment) s union all select round(avg(score),2) score from (select student, assessment, max(round(score)) score from data_new where grade = (select distinct grade from data_new where student = \'%s\') group by student, assessment) s' %(student,student,student)
 	cursor.execute(sql)
 	rs = cursor.fetchall()
-	print rs
 	mydata = [float(r[0]) for r in rs]
-	print mydata
 	return mydata
 
 def student_grid(grade):
 	#sql = 'select student, teacher, assessment, max(score) from data_new where grade = \'%s\' group by student, teacher, assessment' % grade
-	sql = 'select d.student, d.teacher, assessment,case when sped is not null or \"504\" is not null or ell is not null or incidents > 0 then \'Tier 3\' end \"Tier 3\",  max(score) hs from data_new d left join student_attributes a on d.student = a.student where grade = \'%s\' group by d.student, d.teacher, assessment ,case when sped is not null or \"504\" is not null or ell is not null or incidents > 0 then \'Tier 3\' end' % grade
+	sql = 'select d.student, d.teacher, assessment,a.tier,  max(score) hs from data_new d left join student_tiers a on d.student = a.student where grade = \'%s\' group by d.student, d.teacher, assessment ,a.tier' % grade
 	cursor.execute(sql)
 	rs = cursor.fetchall()
 	quizzes = sorted(list(set([r[2] for r in rs])))
@@ -283,8 +274,8 @@ def student_grid(grade):
 	mydata = []
 	for s in student_teachers:
 		row = []
-		row.append(s[0]) # student
-		row.append(s[1]) # teacher
+		row.append(s[1]) # student
+		row.append(s[0]) # teacher
 		row.append(s[2]) # tier 3
 		for q in quizzes:
 			found = False

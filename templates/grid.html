@@ -89,6 +89,7 @@
                     <li><a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a></li>
                     <li><a href="/teacher"><i class="fa fa-bar-chart-o fa-fw"></i> Teacher Drill Down</a></li>
                     <li><a href="/"><i class="fa fa-table fa-fw"></i> Student Grid</a></li>
+                    <li><a href="/domain"><i class="fa fa-table fa-fw"></i> Common Core Test</a></li>
                     <li class="filter">
                         <a>Grade Level<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
@@ -125,8 +126,8 @@
                         <table id="example">
                             <thead>
                                 <tr>
-                                    <th>Student</th>
                                     <th>Teacher</th>
+                                    <th>Student</th>
                                     <th>RTI</th>
                                     {% for q in quizzes %}
                                     <th>{{q}}</th>
@@ -137,7 +138,7 @@
                                 {% for t in table_vals %}
                                 <tr>
                                     {% for i in range(qcnt+3) %}
-                                        {% if i == 0 %}
+                                        {% if i == 1 %}
                                             <td class='tgtStudent' style="cursor: pointer;">{{t[i]}}</td>
                                         {% elif i > 2 %}
                                             {% if t[i] == 1 %}
@@ -311,7 +312,7 @@
             "oColVis": {
                 "sAlign": "right"
             },
-            "iDisplayLength":25
+            "iDisplayLength":15
         } );
         
         

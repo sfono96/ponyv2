@@ -109,6 +109,11 @@
                         <!-- /.panel-body -->
                     </div>
                 </div>
+            </div>
+<!--             <button type="button" class="btn btn-default btn-lg" id="rowbutton" style="background-color:steelblue;color:white">
+                Back
+            </button> -->
+
 <!--                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -123,7 +128,7 @@
                 </div> -->
 
 
-            </div>
+            
         </div>
         <!-- /#page-wrapper -->
     </div>
@@ -131,13 +136,19 @@
 
     <script type="text/javascript">
      $(document).ready(function(){
-        optionsProfByGrade.series = {{seriesAll|safe}}
-        optionsProfByGrade.xAxis.categories = {{grades|safe}}
-        optionsBelowProfByGrade.series = {{seriesBelowProf|safe}}
-        optionsBelowProfByGrade.xAxis.categories = {{bpGrades|safe}}
+        optionsProfByGrade.series = {{seriesAll|safe}};
+        optionsProfByGrade.xAxis.categories = {{grades|safe}};
+        optionsBelowProfByGrade.series = {{seriesBelowProf|safe}};
+        optionsBelowProfByGrade.xAxis.categories = {{bpGrades|safe}};
         new Highcharts.Chart(optionsProfByGrade);
         new Highcharts.Chart(optionsBelowProfByGrade);
+        $('#rowbutton').slideToggle();
+        // $('#backBtn').click(function(){
+
+        // })
     });
+
+
     </script>
 
     <!-- Core Scripts - Include with every page -->

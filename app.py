@@ -28,7 +28,7 @@ def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
 	# growth = single_assessment_growth(f_grade,f_assessment) # this for the growth chart
 	# return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,assessments=assessments,grades=grades,f_grade=f_grade
 	# 	,f_assessment=f_assessment,chart_title=chart_title, growth=growth)
-	return render_template(f_grade=f_grade,f_assessment=f_assessment)
+	return render_template('teacher.html',f_grade=f_grade,f_assessment=f_assessment)
 
 # @app.route('/teacher/<grade>/<assessment>', methods=['GET','POST'])
 # def teacher2(grade,assessment):

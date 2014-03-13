@@ -58,9 +58,9 @@ def grid(grade='1 - First Grade'):
 	return render_template('grid.html',table_vals=table_vals,quizzes=relevant_assessments,qcnt=qcnt,grades=grades,f_grade=f_grade)
 
 # testing out lighter weight nav system to see if helps with the page load
-@app.route('/teacher2',methods=['GET','POST'])
-def t2():
-	return render_template('teacher2.html')
+# @app.route('/teacher2',methods=['GET','POST'])
+# def t2():
+# 	return render_template('teacher2.html')
 
 # testing out common core view
 @app.route('/domain',methods=['GET','POST'])

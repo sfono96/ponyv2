@@ -12,7 +12,7 @@ def home(seriesAll=[],seriesBelowProf=[]):
 
 @app.route('/teacher', methods=['GET','POST'])
 def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
-	return 'hello world'
+	return render_template('teacher.html')
 	# f_grade = grade
 	# f_assessment = assessment
 	# if request.method == 'POST':

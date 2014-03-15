@@ -21,8 +21,8 @@ def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
 	# if f_assessment not in assessments:
 	# 	f_assessment = assessments[0]
 	# chart_title = '\''+f_grade[4:]+': '+f_assessment+'\''
-	# return_data = single_assessment(f_grade,f_assessment) # returns data needed for the chart [teachers list,chart series] 
-	# teachers = return_data[0] # this is to get the relevant teachers (for the x axis)
+	return_data = single_assessment(f_grade,f_assessment) # returns data needed for the chart [teachers list,chart series] 
+	teachers = return_data[0] # this is to get the relevant teachers (for the x axis)
 	# series=return_data[1] # this is to get the chart data
 	# table_vals = single_assessment_table(f_grade,f_assessment) # this is the table raw data
 	# growth = single_assessment_growth(f_grade,f_assessment) # this for the growth chart
@@ -30,7 +30,7 @@ def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
 	# 	,f_assessment=f_assessment,chart_title=chart_title, growth=growth)
 	# return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,assessments=assessments,grades=grades,f_grade=f_grade
 	# 	,f_assessment=f_assessment,chart_title=chart_title, growth=growth)
-	return render_template('teacher.html',f_grade=f_grade,f_assessment=f_assessment)
+	return render_template('teacher.html',teachers=teachers,f_grade=f_grade,f_assessment=f_assessment)
 
 # @app.route('/teacher/<grade>/<assessment>', methods=['GET','POST'])
 # def teacher2(grade,assessment):

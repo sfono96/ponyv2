@@ -14,21 +14,21 @@ def home(seriesAll=[],seriesBelowProf=[]):
 def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
 	f_grade = grade
 	f_assessment = assessment
-	# if request.method == 'POST':
-	# 	f_grade = request.form.getlist("grade")[0]
-	# 	f_assessment = request.form.getlist("asmt")[0]
-	# assessments = relevant_quiz(f_grade) # this is to populate assessments in the filters based on grade
-	# if f_assessment not in assessments:
-	# 	f_assessment = assessments[0]
-	# chart_title = '\''+f_grade[4:]+': '+f_assessment+'\''
+	if request.method == 'POST':
+		f_grade = request.form.getlist("grade")[0]
+		f_assessment = request.form.getlist("asmt")[0]
+	assessments = relevant_quiz(f_grade) # this is to populate assessments in the filters based on grade
+	if f_assessment not in assessments:
+		f_assessment = assessments[0]
+	chart_title = '\''+f_grade[4:]+': '+f_assessment+'\''
 	return_data = single_assessment(f_grade,f_assessment) # returns data needed for the chart [teachers list,chart series] 
 	teachers = return_data[0] # this is to get the relevant teachers (for the x axis)
 	series=return_data[1] # this is to get the chart data
 	table_vals = single_assessment_table(f_grade,f_assessment) # this is the table raw data
-	# growth = single_assessment_growth(f_grade,f_assessment) # this for the growth chart
-	# return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,assessments=assessments,grades=grades,f_grade=f_grade
-	# 	,f_assessment=f_assessment,chart_title=chart_title, growth=growth)
-	return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,f_grade=f_grade,f_assessment=f_assessment)
+	growth = single_assessment_growth(f_grade,f_assessment) # this for the growth chart
+	return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,assessments=assessments,grades=grades,f_grade=f_grade
+		,f_assessment=f_assessment,chart_title=chart_title, growth=growth)
+	#return render_template('teacher.html',teachers=teachers,series=series,table_vals=table_vals,f_grade=f_grade,f_assessment=f_assessment)
 
 # @app.route('/teacher/<grade>/<assessment>', methods=['GET','POST'])
 # def teacher2(grade,assessment):

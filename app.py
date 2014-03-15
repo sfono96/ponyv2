@@ -14,9 +14,9 @@ def home(seriesAll=[],seriesBelowProf=[]):
 def teacher(grade='1 - First Grade',assessment='PLC - Addition'):
 	f_grade = grade
 	f_assessment = assessment
-	if request.method == 'POST':
-		f_grade = request.form.getlist("grade")[0]
-		f_assessment = request.form.getlist("asmt")[0]
+	# if request.method == 'POST':
+	# 	f_grade = request.form.getlist("grade")[0]
+	# 	f_assessment = request.form.getlist("asmt")[0]
 	# assessments = relevant_quiz(f_grade) # this is to populate assessments in the filters based on grade
 	# if f_assessment not in assessments:
 	# 	f_assessment = assessments[0]

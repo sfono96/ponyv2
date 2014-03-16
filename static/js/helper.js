@@ -31,6 +31,7 @@ function randomIntFromInterval(min,max)
 var grades = ['K','1','2','3','4','5','6']
 var grades2 = ['1','2','3','4','5','6']
 var gradesText = ['1 - First Grade','2 - Second Grade','3 - Third Grade','4 - Fourth Grade','5 - Fifth Grade','6 - Sixth Grade']
+var gradesTextShort = ['First Grade','Second Grade','Third Grade','Fourth Grade','Fifth Grade','Sixth Grade']
 var pgradesText = ['4 - Fourth Grade','5 - Fifth Grade','6 - Sixth Grade']
 var weeks = ['1/3','1/10','1/17','1/24','1/31','2/7']
 var teachers = ['Teacher A','Teacher B','Teacher C','Teacher D']
@@ -85,7 +86,8 @@ var optionsProfByGrade = {
                         url = '/api/dash1/all/'+gradesText[this.x] // return back to this format '1 - First Grade'
                         optionsProfByWeek.series = JSON.parse(httpGet(url))[0] // Get the new data from the api (pass the url)
                         optionsProfByWeek.xAxis.categories = JSON.parse(httpGet(url))[1]
-                        new Highcharts.Chart(optionsProfByWeek) 
+                        new Highcharts.Chart(optionsProfByWeek)
+                        $('#rowbutton').slideToggle("350");
                     }
                 }
             }
@@ -146,7 +148,13 @@ var optionsProfByWeek = {
             point:{
                 events:{
                     //click: function(){alert ('Category: '+ this.category +', value: '+ this.y);}
-                    click: function(){proficient = new Highcharts.Chart(optionsProfByGrade);}
+                    //click: function(){new Highcharts.Chart(optionsProfByGrade);}
+                    click: function(){
+                        var grade = gradesText[gradesTextShort.indexOf(optionsProfByWeek.title.text)]
+                        var assessment = this.category
+                        url = '/teacher/'+grade+'/'+assessment
+                        window.location = url
+                    }
                 }
             }
         }

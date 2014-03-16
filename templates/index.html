@@ -110,9 +110,11 @@
                     </div>
                 </div>
             </div>
-<!--             <button type="button" class="btn btn-default btn-lg" id="rowbutton" style="background-color:steelblue;color:white">
+            <button type="button" class="btn btn-default btn-lg"  id="rowbutton" style="background-color:steelblue;color:white">
                 Back
-            </button> -->
+            </button>
+
+ 
 
 <!--                 <div class="col-lg-6">
                     <div class="panel panel-default">
@@ -136,16 +138,19 @@
 
     <script type="text/javascript">
      $(document).ready(function(){
+        $('#rowbutton').hide();
+        $('#rowbutton').click(function(){
+            console.log("hello")
+            new Highcharts.Chart(optionsProfByGrade);
+            $(this).slideToggle("350");
+        })
         optionsProfByGrade.series = {{seriesAll|safe}};
         optionsProfByGrade.xAxis.categories = {{grades|safe}};
         optionsBelowProfByGrade.series = {{seriesBelowProf|safe}};
         optionsBelowProfByGrade.xAxis.categories = {{bpGrades|safe}};
         new Highcharts.Chart(optionsProfByGrade);
         new Highcharts.Chart(optionsBelowProfByGrade);
-        $('#rowbutton').slideToggle();
-        // $('#backBtn').click(function(){
 
-        // })
     });
 
 

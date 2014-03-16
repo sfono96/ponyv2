@@ -153,7 +153,7 @@ var optionsProfByWeek = {
                         var grade = gradesText[gradesTextShort.indexOf(optionsProfByWeek.title.text)]
                         var assessment = this.category
                         url = '/teacher/'+grade+'/'+assessment
-                        window.location = url
+                        window.location.href = url
                     }
                 }
             }
@@ -443,12 +443,12 @@ var optionsStudentHistorical = {
     },
     xAxis: {
         categories: ['2011', '2012', '2013','2014'],
-        plotLines: [{
-            color: 'orange',
-            width: 4,
-            value: 2.5,
-            dashStyle:'Dash'
-        }]
+        // plotLines: [{
+        //     color: 'orange',
+        //     width: 4,
+        //     value: 2.5,
+        //     dashStyle:'Dash'
+        // }]
     },
     yAxis: {
         // min: ,
@@ -473,14 +473,14 @@ var optionsStudentHistorical = {
     },
     series: [{
         name: 'Student',
-        data:[randomIntFromInterval(160,180),randomIntFromInterval(160,182),randomIntFromInterval(165,185),randomIntFromInterval(160,190)]
+        data:[randomIntFromInterval(160,180),randomIntFromInterval(160,182),randomIntFromInterval(165,185)]
     },{
         name: 'School Avg',
-        data:[164.2,167.3,174.3,175.3],
+        data:[164.2,167.3,174.3],
         dashStyle:'Dot'
     },{
         name: 'State Avg',
-        data:[167.2,171.3,179.3,181.2],
+        data:[167.2,171.3,179.3],
         dashStyle:'Dot'
     }]
 };

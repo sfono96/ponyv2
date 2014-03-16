@@ -153,7 +153,7 @@ var optionsProfByWeek = {
                         var grade = gradesText[gradesTextShort.indexOf(optionsProfByWeek.title.text)]
                         var assessment = this.category
                         url = '/teacher/'+grade+'/'+assessment
-                        window.location.href = url
+                        window.location.href = 'http://' + window.location.host + url
                     }
                 }
             }

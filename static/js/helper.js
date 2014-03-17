@@ -442,7 +442,7 @@ var optionsStudentHistorical = {
         text: 'Historical: CRT Math'
     },
     xAxis: {
-        categories: ['2011', '2012', '2013','2014'],
+        categories: ['2011', '2012', '2013'],
         // plotLines: [{
         //     color: 'orange',
         //     width: 4,
